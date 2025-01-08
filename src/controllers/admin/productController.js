@@ -1,4 +1,5 @@
 const productService = require('../../services/admin/productService');
+const { validationResult } = require('express-validator');
 
 class ProductController {
   async getAllProducts(req, res) {
@@ -83,15 +84,34 @@ class ProductController {
   }
 
   async createProduct(req, res) {
-      const result = await productService.createProduct();
-      res.status(200).json(result);
+    const result = await productService.createProduct();
+    res.status(200).json(result);
   }
 
   async createPostProduct(req, res) {
-    const productData = req.body;
-    const result = await productService.createPostProduct(productData);
-    res.status(200).json(result);
-}
+    // Validate request body
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    try {
+      const productData = req.body;
+      const result = await productService.createPostProduct(productData);
+      res.status(200).json(result);
+
+    } catch (error) {
+      res.status(500).json({
+        message: 'Failed to create product',
+        error: error.message,
+      });
+    }
+  }
+
+
 
 }
 module.exports = new ProductController();

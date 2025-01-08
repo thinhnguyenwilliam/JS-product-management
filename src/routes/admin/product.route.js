@@ -1,5 +1,6 @@
 const express = require('express');
 const productController = require('../../controllers/admin/productController');
+const validateProductCreation = require('../../middlewares/admin/validateProduct');
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ router.patch('/restore/:id', productController.restoreProduct);
 router.patch('/change-position', productController.changePosition);
 
 router.get('/create', productController.createProduct);
-router.post('/create', productController.createPostProduct);
+router.post('/create', validateProductCreation, productController.createPostProduct);
 
 
 
